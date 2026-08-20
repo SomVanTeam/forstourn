@@ -56,9 +56,13 @@ class MatchCombo:
             self.participants.append(PARTICIPANTS[pix])
         self.participants.sort(key = lambda p: p.TEMPkilleramt)
         self.participants[0].TEMPkilleramt += 1
+        self.pixcombo = []
+        for p in self.participants:
+            self.pixcombo.append(PARTICIPANTS.index(p))
 
     def __repr__(self) -> str:
         rs = f"#{self.combonum:02d} | Killer: {stdName(self.participants[0].nickname)} | Survivors:"
         for i in range(1, len(self.participants)):
             rs = rs + f" {stdName(self.participants[i].nickname)} |"
+        rs = rs + f" | {repr(self.pixcombo)} |"
         return rs

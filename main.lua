@@ -232,7 +232,7 @@ function tryGivePenalty(plr:Player):nil
     end
 end
 
-local desiredMatchCombo = "[0, 8, 2, 5, 7]"
+local desiredMatchCombo = "[0, 8, 1, 5, 7]"
 local desiredMap = ""
 
 local roundBeganTime = 0
@@ -300,22 +300,22 @@ function roundStart():boolean
         stringBuf("GiveStatus"),
         stringBuf("All"),
         stringBuf("Helpless"),
-        numberBuf(676767),
-        numberBuf(8)
+        numberBuf(67),
+        numberBuf(10)
     })
     sendAdminCommand({
         stringBuf("GiveStatus"),
         stringBuf("All"),
         stringBuf("Slowness"),
         numberBuf(10),
-        numberBuf(8)
+        numberBuf(10)
     })
     sendAdminCommand({
         stringBuf("GiveStatus"),
         stringBuf("All"),
         stringBuf("Resistance"),
-        numberBuf(676767),
-        numberBuf(8)
+        numberBuf(9000),
+        numberBuf(10)
     })
     for _, s in pairs(getAliveSurvivors()) do
         table.insert(lastRound.survivors, {
@@ -337,7 +337,7 @@ function roundStart():boolean
         })
     end
     coroutine.wrap(roundLoop)()
-    task.wait(5)
+    task.wait(8)
     startTimer()
     task.wait(1)
     roundBeganTime = os.time()
@@ -411,7 +411,7 @@ function onRoundEnded()
         ["Content-Type"] = "application/json"
         }
     })
-    task.wait(1)
+    task.wait(1.5)
     stopTimer()
 end
 
@@ -421,7 +421,9 @@ function roundAbandon()
         return false, 0
     end
     roundT = true
-    onRoundEnded()
+    sendAdminCommand({
+        stringBuf("ForceRoundEnd")
+    })
     roundT = false
     return true
 end

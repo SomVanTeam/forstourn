@@ -372,23 +372,24 @@ function onRoundEnded()
     end
     local historyF = "abcd\n\n"
     for _, action in pairs(lastRound.actions) do
-        local formatted = action.desc.formattable
-        print(formatted)
-        local targetsformatted = ""
-        local i = 1
-        for _, target in pairs(action.targets) do
-            targetsformatted = targetsformatted..pingFromName(target.Name)
-            if i ~= #action.targets then
-                targetsformatted = targetsformatted..", "
-            end
-            i += 1
-        end
-        print(targetsformatted)
-        formatted = string.gsub(formatted, "%A", pingFromName(action.actor.Name))
-        print(formatted)
-        formatted = string.gsub(formatted, "%T", targetsformatted)
-        print(formatted)
-        historyF = historyF..formatted.." (+"..tostring(action.desc.pointReward)..")\n"
+        continue -- TEMP
+        -- local formatted = action.desc.formattable
+        -- print(formatted)
+        -- local targetsformatted = ""
+        -- local i = 1
+        -- for _, target in pairs(action.targets) do
+        --     targetsformatted = targetsformatted..pingFromName(target.Name)
+        --     if i ~= #action.targets then
+        --         targetsformatted = targetsformatted..", "
+        --     end
+        --     i += 1
+        -- end
+        -- print(targetsformatted)
+        -- formatted = string.gsub(formatted, "%A", pingFromName(action.actor.Name))
+        -- print(formatted)
+        -- formatted = string.gsub(formatted, "%T", targetsformatted)
+        -- print(formatted)
+        -- historyF = historyF..formatted.." (+"..tostring(action.desc.pointReward)..")\n"
     end
     local embedCol = math.random(0, 16777215)
     local payload = {

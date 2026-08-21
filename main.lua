@@ -384,9 +384,9 @@ function onRoundEnded()
             i += 1
         end
         print(targetsformatted)
-        formatted = formatted:gsub("%A", pingFromName(action.actor.Name), 1)
+        formatted = string.gsub(formatted, "%A", pingFromName(action.actor.Name))
         print(formatted)
-        formatted = formatted:gsub("%T", targetsformatted, 1)
+        formatted = string.gsub(formatted, "%T", targetsformatted)
         print(formatted)
         historyF = historyF..formatted.." (+"..tostring(action.desc.pointReward)..")\n"
     end

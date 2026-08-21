@@ -250,7 +250,7 @@ function roundStart():boolean
         tonumber(desiredMatchCombo:sub(14,14))+1,
     }
     local allowedSurvivors = {}
-    for _, sid in pairs(allowedSurvivors) do
+    for _, sid in pairs(survivorids) do
         table.insert(allowedSurvivors, participants[sid])
     end
     sendAdminCommand({

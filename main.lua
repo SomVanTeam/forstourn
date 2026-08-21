@@ -373,6 +373,7 @@ function onRoundEnded()
     local historyF = "abcd\n\n"
     for _, action in pairs(lastRound.actions) do
         local formatted = action.desc.formattable
+        print(formatted)
         local targetsformatted = ""
         local i = 1
         for _, target in pairs(action.targets) do
@@ -382,8 +383,11 @@ function onRoundEnded()
             end
             i += 1
         end
+        print(targetsformatted)
         formatted = formatted:gsub("%A", pingFromName(action.actor.Name), 1)
+        print(formatted)
         formatted = formatted:gsub("%T", targetsformatted, 1)
+        print(formatted)
         historyF = historyF..formatted.." (+"..tostring(action.desc.pointReward)..")\n"
     end
     local embedCol = math.random(0, 16777215)
@@ -441,7 +445,7 @@ local roundviewTab = window:CreateTab({ name = "Round Overview", icon = 93364949
 commandsTab:CreateInput({
     name = "Match Combo",
     numeric = false,
-    value = "[0, 1, 2, 3, 4]",
+    value = desiredMatchCombo,
     placeholder = "Enter Match Combo",
     callback = function(text)
         desiredMatchCombo = text

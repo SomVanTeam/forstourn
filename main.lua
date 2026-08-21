@@ -276,6 +276,7 @@ function roundStart():boolean
     task.wait(1)
     for _, s in pairs(getAliveSurvivors()) do
         if (not table.find(allowedSurvivors, getCharacterUsername(s))) --[[or isVipCharacter(s.Name)]] then
+            print("killing "..getCharacterUsername(s))    
             sendAdminCommand({
                 stringBuf("KillPlayer"),
                 stringBuf(getCharacterUsername(s))
@@ -283,12 +284,12 @@ function roundStart():boolean
         end
     end
     for _, k in pairs(getAliveKillers()) do
-        if isVipCharacter(k.Name) then
-            sendAdminCommand({
-                stringBuf("KillPlayer"),
-                stringBuf(getCharacterUsername(k))
-            })
-        end
+        --if isVipCharacter(k.Name) then
+            -- sendAdminCommand({
+            --     stringBuf("KillPlayer"),
+            --     stringBuf(getCharacterUsername(k))
+            -- })
+        --end
     end
     roundActive = true
     lastRound = {

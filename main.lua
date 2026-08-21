@@ -1,8 +1,37 @@
 local HttpService = game:GetService("HttpService")
+local Workspace = game:GetService("Workspace")
 local networker:RemoteEvent = game.ReplicatedStorage.Modules.Network.Network.RemoteEvent
 local reporter = "https://discord.com/api/webhooks/1533176667776880764/DW2Y_nEtY_V5aqD7L3J27z2ywIvmU2IWJ_bWJiE0dlV6BRwfw5uiE8QsDFpLBUV0N5gm"
 
-function sendBufTable(buftable:{buffer}):nil
+pings = {
+    ["somvanhaaaaiiiiii"] = "<@730864691223593031>",
+    ["2022mm12"] = "<@1220054046640046091>",
+    ["anderkva"] = "<@1045795103001825400>",
+    ["unttaka"] = "<@577128685342031892>",
+    ["lengotova"] = "<@796288372388790292>",
+    ["Lynzqqx"] = "<@584019099965980674>",
+    ["jarik122012"] = "<@946397884209823745>",
+    ["Xx_KaKoSuKxX"] = "<@903598078387445770>",
+    ["th_vladaimir"] = "<VLADAIMIR PING>", -- TESTING ONLY
+}
+
+participants = {
+    "somvanhaaaaiiiiii",
+    "2022mm12",
+    "anderkva",
+    "unttaka",
+    "lengotova",
+    "Lynzqqx",
+    "jarik122012",
+    "Xx_KaKoSuKxX",
+    "th_vladaimir" -- TESTING ONLY
+}
+
+function pingFromName(name:string):string
+    return pings[name]
+end
+
+function sendAdminCommand(buftable:{buffer}):nil
     networker:FireServer(
         "ExecuteCommand",
         buftable
@@ -29,10 +58,53 @@ end
 
 local targetAll = stringBuf("All")
 
+type ActionDesc = {
+    pointReward:number,
+    formattable:string, -- %A - Actor, %F - Targets
+    -- string.gsub(formattable, "&A", "Actor", 1)
+}
+
+local actionDescs:{[string]:ActionDesc} = {
+    ["Kill"]={pointReward = 0.5, formattable = "%A убил %F"},
+    ["Slasher Kill Behead"]={pointReward = 0.25, formattable = "%A убил %F с помощью Behead"},
+    ["Slasher Land Gashing Wound"]={pointReward = 0.5, formattable = "%A попал в %F гешингом"},
+    ["Slasher Cancel Stun"]={pointReward = 0.25, formattable = "%A аннулировал стан рейджом"},
+    ["C00lkidd Land Corrupt Nature"]={pointReward = 0.25, formattable = "%A попал в %F коррупт нейчуром"},
+    ["C00lkidd Land Walkspeed Override"]={pointReward = 0.65, formattable = "%A попал в %F валкспид оверрайдом"},
+    ["C00lkidd Land Minion"]={pointReward = 0.5, formattable = "Миньон %A каснулся в %F"},
+    ["John Doe Land Spike"]={},
+    ["John Doe Land Trap"]={},
+    ["John Doe Cancel Stun"]={},
+    ["1x1x1x1 Land Entanglement"]={},
+    ["1x1x1x1 Land Mass Infection"]={},
+}
+
+type Action = {
+    actor:Player,
+    targets:{Player},
+    desc:ActionDesc,
+}
+
+type character = {
+    player:Player,
+    charname:string
+}
+
+type lastRound = {
+    killers:{character},
+    survivors:{character},
+    actions:{Action},
+}
+local lastRound:lastRound = {}
+
+function addAction(action:Action)
+    table.insert(lastRound.actions, action)
+end
+
 local timerCurrentlyStopped = true
 function toggleTimer()
     timerCurrentlyStopped = not timerCurrentlyStopped
-    sendBufTable({
+    sendAdminCommand({
         stringBuf("ToggleTimer")
     })
 end
@@ -49,24 +121,38 @@ function stopTimer()
     end
 end
 
-function getAliveKillers():{Player}
-    
+function getAliveKillers():{Model}
+    return Workspace.Players.Killers:GetChildren()
 end
 
-function getAliveSurvivors():{Player}
+function getAliveSurvivors():{Model}
+    return Workspace.Players.Survivors:GetChildren()
+end
 
+function getCharacterUsername(char:Model)
+    return char:GetAttribute("Username")
 end
 
 function isKiller(plrname:string):boolean
-
+    for _, k in pairs(getAliveKillers()) do
+        if getCharacterUsername(k) == plrname then
+            return true
+        end
+    end
+    return false
 end
 
 function isSurvivor(plrname:string):boolean
-
+    for _, s in pairs(getAliveSurvivors()) do
+        if getCharacterUsername(s) == plrname then
+            return true
+        end
+    end
+    return false
 end
 
 function getCharacterName(plrname:string):string
-    
+    return game.Players:FindFirstChild(plrname).Character.Name
 end
 
 function isVipCharacter(charname:string):boolean
@@ -96,7 +182,7 @@ function isVipCharacter(charname:string):boolean
 end
 
 function isLMS():boolean
-    return #getAliveSurvivors() == 1
+    return #getAliveSurvivors() == 1 and #getAliveKillers() >= 1
 end
 
 local playtimePenaltyMult = 86400*14 -- 14 days
@@ -110,7 +196,7 @@ function tryGivePenalty(plr:Player):nil
     end
     if penaltyLevel > 0 then
         if isKiller(plr.Name) then
-            sendBufTable({
+            sendAdminCommand({
                 stringBuf("GiveStatus"),
                 stringBuf(plr.Name),
                 stringBuf("Weakness"),
@@ -118,7 +204,7 @@ function tryGivePenalty(plr:Player):nil
                 numberBuf(67)
             })
         else
-            sendBufTable({
+            sendAdminCommand({
                 stringBuf("GiveStatus"),
                 stringBuf(plr.Name),
                 stringBuf("Vulnerable"),
@@ -129,7 +215,7 @@ function tryGivePenalty(plr:Player):nil
     end
 end
 
-local desiredKiller = ""
+local desiredMatchCombo = "[0, 1, 2, 5, 7]"
 local desiredMap = ""
 
 local roundBeganTime = 0
@@ -141,56 +227,171 @@ function roundStart():boolean
         return false
     end
     roundT = true
-    if desiredKiller then
-        sendBufTable({
-            stringBuf("ForceNextKiller"),
-            stringBuf(desiredKiller)
-        })
+    local killerid = tonumber(desiredMatchCombo[2])+1
+    local desiredKiller = participants[killerid]
+    local survivorids = {
+        tonumber(desiredMatchCombo[5])+1,
+        tonumber(desiredMatchCombo[8])+1,
+        tonumber(desiredMatchCombo[11])+1,
+        tonumber(desiredMatchCombo[14])+1,
+    }
+    local allowedSurvivors = {}
+    for _, sid in pairs(allowedSurvivors) do
+        table.insert(allowedSurvivors, participants[sid])
     end
+    sendAdminCommand({
+        stringBuf("ForceNextKiller"),
+        stringBuf(desiredKiller)
+    })
+    task.wait(1)
     if desiredMap then
         
     end
-
-    sendBufTable({
-
+    startTimer()
+    task.wait(1)
+    sendAdminCommand({
+        "ForceIntermissionEnd"
     })
+    task.wait(1)
+    stopTimer()
+    task.wait(2)
+    for _, s in pairs(getAliveSurvivors()) do
+        if not table.find(allowedSurvivors, getCharacterUsername(s)) or isVipCharacter(s.Name) then
+            sendAdminCommand({
+                stringBuf("KillPlayer"),
+                stringBuf(getCharacterUsername(s))
+            })
+        end
+    end
+    for _, k in pairs(getAliveKillers()) do
+        if isVipCharacter(k.Name) then
+            sendAdminCommand({
+                stringBuf("KillPlayer"),
+                stringBuf(getCharacterUsername(k))
+            })
+        end
+    end
     roundActive = true
-    task.wait(5)
-    sendBufTable({
+    lastRound = {}
+    sendAdminCommand({
         stringBuf("GiveStatus"),
         stringBuf(targetAll),
         stringBuf("Helpless"),
         numberBuf(10),
         numberBuf(5)
     })
-    sendBufTable({
+    sendAdminCommand({
         stringBuf("GiveStatus"),
         stringBuf(targetAll),
         stringBuf("Slowness"),
         numberBuf(10),
         numberBuf(5)
     })
-    sendBufTable({
+    sendAdminCommand({
         stringBuf("GiveStatus"),
         stringBuf(targetAll),
         stringBuf("Resistance"),
         numberBuf(10),
         numberBuf(5)
     })
+    coroutine.wrap(roundLoop)()
     task.wait(5)
+    startTimer()
+    task.wait(1)
     roundBeganTime = os.time()
     roundT = false
     return true
 end
 
--- returns success, roundLastedFor
-function roundEnd()
+function roundLoop()
+    while roundActive do
+        task.wait(2)
+        for _, s in pairs(getAliveSurvivors()) do
+            local p = game.Players:FindFirstChild(getCharacterUsername(s))
+            tryGivePenalty(p)
+        end
+        for _, k in pairs(getAliveKillers()) do
+            local p = game.Players:FindFirstChild(getCharacterUsername(k))
+            tryGivePenalty(p)
+        end
+    end
+end
+
+function onRoundEnded()
+    roundActive = false
+    local roundLastedFor = os.time()-roundBeganTime
+    local killersF = ""
+    for _, killer in pairs(lastRound.killers) do
+        killersF = killersF..pingFromName(killer.player.Name).." - "..killer.charname.."\n"
+    end
+    local survivorsF = ""
+    for _, survivor in pairs(lastRound.survivors) do
+        survivorsF = survivorsF..pingFromName(survivor.player.Name).." - "..survivor.charname.."\n"
+    end
+    local historyF = "ABCDEFG"
+
+    local embedCol = math.random(0, 16777215)
+    local payload = {
+        embeds={
+            {
+                title="Раунд Окончен",
+                description="Киллеры:\n"+killersF+"\nСюрвы:\n"+survivorsF,
+                color=embedCol,
+                fields={
+                    {
+                        name="История",
+                        value=historyF,
+                        inline=false
+                    }
+                }
+            }
+        }
+    }
+    HttpService:PostAsync(reporter, HttpService:JSONEncode(payload), Enum.HttpContentType.ApplicationJson)
+    
+end
+
+-- returns success
+function roundAbandon()
     if roundT or not roundActive then
         return false, 0
     end
     roundT = true
-    roundActive = false
-
+    onRoundEnded()
     roundT = false
-    return true, os.time() - roundBeganTime
+    return true
 end
+
+local Rayfield = loadstring(game:HttpGet("https://sirius.menu/gen2"))()
+
+local window = Rayfield:CreateWindow({
+    name = "Forsaken Tournament Helper",
+    subtitle = "By TH_Vladaimir",
+})
+
+local commandsTab = window:CreateTab({ name = "Actions", icon = 93364949241311 })
+local roundviewTab = window:CreateTab({ name = "Round Overview", icon = 93364949241311 })
+
+commandsTab:CreateInput({
+    name = "Match Combo",
+    numeric = false,
+    value = "[0, 1, 2, 3, 4]",
+    placeholder = "Enter Match Combo",
+    callback = function(text)
+        desiredMatchCombo = text
+    end
+})
+
+commandsTab:CreateButton({
+    name = "Begin Round",
+    callback = function()
+        roundStart()
+    end
+})
+
+commandsTab:CreateButton({
+    name = "Abandon Round",
+    callback = function()
+        roundAbandon()
+    end
+})

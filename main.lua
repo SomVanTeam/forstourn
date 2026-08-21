@@ -66,7 +66,7 @@ function isHitboxGreen(hitbox:BasePart)
     return false
 end
 
-local targetAll = stringBuf("All")
+local targetAll = "All"
 
 type ActionDesc = {
     pointReward:number,

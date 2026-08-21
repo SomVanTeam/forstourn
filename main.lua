@@ -1,5 +1,4 @@
 local HttpService = game:GetService("HttpService")
-local Workspace = game:GetService("Workspace")
 local networker:RemoteEvent = game.ReplicatedStorage.Modules.Network.Network.RemoteEvent
 local reporter = "https://discord.com/api/webhooks/1533176667776880764/DW2Y_nEtY_V5aqD7L3J27z2ywIvmU2IWJ_bWJiE0dlV6BRwfw5uiE8QsDFpLBUV0N5gm"
 
@@ -122,11 +121,11 @@ function stopTimer()
 end
 
 function getAliveKillers():{Model}
-    return Workspace.Players.Killers:GetChildren()
+    return workspace.Players.Killers:GetChildren()
 end
 
 function getAliveSurvivors():{Model}
-    return Workspace.Players.Survivors:GetChildren()
+    return workspace.Players.Survivors:GetChildren()
 end
 
 function getCharacterUsername(char:Model)

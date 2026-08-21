@@ -1,3 +1,5 @@
+--https://www.roblox.com/share?code=c947bd6f9524044eb7524850a33fa41b&type=Server
+--loadstring(game:HttpGet(("https://raw.githubusercontent.com/SomVanTeam/forstourn/refs/heads/main/main.lua")))()
 local HttpService = game:GetService("HttpService")
 local networker:RemoteEvent = game.ReplicatedStorage.Modules.Network.Network.RemoteEvent
 local reporter = "https://discord.com/api/webhooks/1533176667776880764/DW2Y_nEtY_V5aqD7L3J27z2ywIvmU2IWJ_bWJiE0dlV6BRwfw5uiE8QsDFpLBUV0N5gm"
@@ -237,13 +239,15 @@ function roundStart():boolean
         return false
     end
     roundT = true
-    local killerid = tonumber(desiredMatchCombo[2])+1
+    print(desiredMatchCombo)
+    print(desiredMatchCombo:sub(2,2))
+    local killerid = tonumber(desiredMatchCombo:sub(2,2))+1
     local desiredKiller = participants[killerid]
     local survivorids = {
-        tonumber(desiredMatchCombo[5])+1,
-        tonumber(desiredMatchCombo[8])+1,
-        tonumber(desiredMatchCombo[11])+1,
-        tonumber(desiredMatchCombo[14])+1,
+        tonumber(desiredMatchCombo:sub(5,5))+1,
+        tonumber(desiredMatchCombo:sub(8,8))+1,
+        tonumber(desiredMatchCombo:sub(11,11))+1,
+        tonumber(desiredMatchCombo:sub(14,14))+1,
     }
     local allowedSurvivors = {}
     for _, sid in pairs(allowedSurvivors) do

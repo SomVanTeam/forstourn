@@ -55,6 +55,13 @@ function numberBuf(num:number):buffer
     return buf
 end
 
+function isHitboxGreen(hitbox:BasePart)
+    if hitbox.Color.G > 127 then
+        return true
+    end
+    return false
+end
+
 local targetAll = stringBuf("All")
 
 type ActionDesc = {
@@ -132,7 +139,7 @@ function getAliveSurvivors():{Model}
     return workspace.Players.Survivors:GetChildren()
 end
 
-function getCharacterUsername(char:Model)
+function getCharacterUsername(char:Model):string
     return char:GetAttribute("Username")
 end
 
@@ -374,7 +381,8 @@ function onRoundEnded()
         }
     }
     HttpService:PostAsync(reporter, HttpService:JSONEncode(payload), Enum.HttpContentType.ApplicationJson)
-    
+    task.wait(1)
+    stopTimer()
 end
 
 -- returns success

@@ -403,7 +403,14 @@ function onRoundEnded()
             }
         }
     }
-    HttpService:PostAsync(reporter, HttpService:JSONEncode(payload), Enum.HttpContentType.ApplicationJson)
+    request({
+        Url = reporter,
+        Method = "POST",
+        Body = HttpService:JSONEncode(payload),
+        Headers = {
+        ["Content-Type"] = "application/json"
+        }
+    })
     task.wait(1)
     stopTimer()
 end

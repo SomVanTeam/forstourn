@@ -291,8 +291,11 @@ function roundStart():boolean
         end
     end
     roundActive = true
-    lastRound = {}
-    print("A")
+    lastRound = {
+        survivors = {},
+        killers = {},
+        actions = {}
+    }
     sendAdminCommand({
         stringBuf("GiveStatus"),
         stringBuf("All"),
@@ -314,8 +317,11 @@ function roundStart():boolean
         numberBuf(10),
         numberBuf(5)
     })
-    print("B")
     for _, s in pairs(getAliveSurvivors()) do
+        table.insert(lastRound.survivors, {
+            charname = s.Name,
+            player = game.Players:FindFirstChild(getCharacterUsername(s))
+        })
         s:FindFirstChildOfClass("Humanoid").Died:Once(function()
             addAction({
                 actor = desiredKiller,
@@ -323,6 +329,12 @@ function roundStart():boolean
                 desc = actionDescs["Kill"]
             })
         end)
+    end
+    for _, k in pairs(getAliveKillers()) do
+        table.insert(lastRound.killers, {
+            charname = k.Name,
+            player = game.Players:FindFirstChild(getCharacterUsername(k))
+        })
     end
     coroutine.wrap(roundLoop)()
     task.wait(5)
@@ -379,7 +391,7 @@ function onRoundEnded()
         embeds={
             {
                 title="Раунд Окончен",
-                description="Киллеры:\n"+killersF+"\nСюрвы:\n"+survivorsF,
+                description="Киллеры:\n"+killersF+"\nСюрвы:\n"+survivorsF+"\nПродлился "..tostring(roundLastedFor).." секунд",
                 color=embedCol,
                 fields={
                     {

@@ -17,15 +17,15 @@ pings = {
 }
 
 participants = {
-    "somvanhaaaaiiiiii",
-    "2022mm12",
-    "anderkva",
-    "unttaka",
-    "lengotova",
-    "Lynzqqx",
-    "jarik122012",
-    "Xx_KaKoSuKxX",
-    "th_vladaimir" -- TESTING ONLY
+    "somvanhaaaaiiiiii", -- 0
+    "2022mm12", -- 1
+    "anderkva", -- 2
+    "unttaka", -- 3
+    "lengotova", -- 4
+    "Lynzqqx", -- 5
+    "jarik122012", -- 6
+    "Xx_KaKoSuKxX", -- 7
+    "th_vladaimir" -- 8 TESTING ONLY
 }
 
 function pingFromName(name:string):string
@@ -273,9 +273,9 @@ function roundStart():boolean
     })
     task.wait(1)
     stopTimer()
-    task.wait(2)
+    task.wait(1)
     for _, s in pairs(getAliveSurvivors()) do
-        if not table.find(allowedSurvivors, getCharacterUsername(s)) or isVipCharacter(s.Name) then
+        if (not table.find(allowedSurvivors, getCharacterUsername(s))) --[[or isVipCharacter(s.Name)]] then
             sendAdminCommand({
                 stringBuf("KillPlayer"),
                 stringBuf(getCharacterUsername(s))
@@ -296,6 +296,7 @@ function roundStart():boolean
         killers = {},
         actions = {}
     }
+    task.wait(1)
     sendAdminCommand({
         stringBuf("GiveStatus"),
         stringBuf("All"),

@@ -40,11 +40,13 @@ function sendAdminCommand(buftable:{buffer}):nil
 end
 
 function stringBuf(str:string):buffer
-    local buf = buffer.fromstring("\x03\x00\x00\x00\x00"..str)
+    local buf = buffer.create(string.len(str)+5) --buffer.fromstring("\x03\x00\x00\x00\x00"..str)
     -- first byte is 03 meaning this is a string
+    buffer.writeu8(buf, 0, 3)
     -- second byte is string length
     -- other zeros are unused
     buffer.writeu8(buf, 1, string.len(str))
+    buffer.writestring(buf, 5, str)
     return buf
 end
 

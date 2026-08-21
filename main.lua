@@ -325,7 +325,7 @@ function roundStart():boolean
         s:FindFirstChildOfClass("Humanoid").Died:Once(function()
             addAction({
                 actor = desiredKiller,
-                targets = {getCharacterUsername(s)},
+                targets = {game.Players:FindFirstChild(getCharacterUsername(s))},
                 desc = actionDescs["Kill"]
             })
         end)
@@ -377,7 +377,7 @@ function onRoundEnded()
         local targetsformatted = ""
         local i = 1
         for _, target in pairs(action.targets) do
-            targetsformatted = targetsformatted..pingFromName(target)
+            targetsformatted = targetsformatted..pingFromName(target.Name)
             if i ~= #action.targets then
                 targetsformatted = targetsformatted..", "
             end

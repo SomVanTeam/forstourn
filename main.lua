@@ -59,23 +59,27 @@ local targetAll = stringBuf("All")
 
 type ActionDesc = {
     pointReward:number,
-    formattable:string, -- %A - Actor, %F - Targets
+    formattable:string, -- %A - Actor, %T - Targets
     -- string.gsub(formattable, "&A", "Actor", 1)
 }
 
 local actionDescs:{[string]:ActionDesc} = {
-    ["Kill"]={pointReward = 0.5, formattable = "%A убил %F"},
-    ["Slasher Kill Behead"]={pointReward = 0.25, formattable = "%A убил %F с помощью Behead"},
-    ["Slasher Land Gashing Wound"]={pointReward = 0.5, formattable = "%A попал в %F гешингом"},
+    ["Kill"]={pointReward = 0.5, formattable = "%A убил %T"},
+    ["Slasher Kill Behead"]={pointReward = 0.25, formattable = "%A убил %T с помощью бихеда"},
+    ["Slasher Land Gashing Wound"]={pointReward = 0.5, formattable = "%A попал в %T гешингом"},
     ["Slasher Cancel Stun"]={pointReward = 0.25, formattable = "%A аннулировал стан рейджом"},
-    ["C00lkidd Land Corrupt Nature"]={pointReward = 0.25, formattable = "%A попал в %F коррупт нейчуром"},
-    ["C00lkidd Land Walkspeed Override"]={pointReward = 0.65, formattable = "%A попал в %F валкспид оверрайдом"},
-    ["C00lkidd Land Minion"]={pointReward = 0.5, formattable = "Миньон %A каснулся в %F"},
-    ["John Doe Land Spike"]={},
-    ["John Doe Land Trap"]={},
-    ["John Doe Cancel Stun"]={},
-    ["1x1x1x1 Land Entanglement"]={},
-    ["1x1x1x1 Land Mass Infection"]={},
+    ["C00lkidd Land Corrupt Nature"]={pointReward = 0.25, formattable = "%A попал в %T коррупт нейчуром"},
+    ["C00lkidd Land Walkspeed Override"]={pointReward = 0.65, formattable = "%A попал в %T валкспид оверрайдом"},
+    ["C00lkidd Land Minion"]={pointReward = 0.5, formattable = "Миньон %A каснулся в %T"},
+    ["John Doe Land Spike"]={pointReward = 0.05, formattable = "%A попал шипом в %T"},
+    ["John Doe Land Trap"]={pointReward = 0.25, formattable = "%T наступил в ловушку %A"},
+    ["John Doe Cancel Stun"]={pointReward = 0.5, formattable = "%A отменил стан с помощью эррор 404"},
+    ["1x1x1x1 Land Entanglement"]={pointReward = 0.25, formattable = "%A попал энтанглом в %T"},
+    ["1x1x1x1 Land Mass Infection"]={pointReward = 0.4, formattable = "%A попал масс инфекшеном в %T"},
+
+    ["Noob Tricked Killer"]={pointReward = 0.3, formattable = "%A успешно спрятался от киллера гостбургером"},
+    ["Noob Used Slateskin"]={pointReward = 0.15, formattable = "%A использовал слейтскин"},
+    ["Noob Used BloxyCola"]={pointReward = 0.15, formattable = "%A использовал блокси колу рядом с киллером"},
 }
 
 type Action = {
@@ -293,6 +297,15 @@ function roundStart():boolean
         numberBuf(10),
         numberBuf(5)
     })
+    for _, s in pairs(getAliveSurvivors()) do
+        s:FindFirstChildOfClass("Humanoid").Died:Once(function()
+            addAction({
+                actor = desiredKiller,
+                targets = {getCharacterUsername(s)},
+                desc = actionDescs["Kill"]
+            })
+        end)
+    end
     coroutine.wrap(roundLoop)()
     task.wait(5)
     startTimer()
@@ -327,8 +340,22 @@ function onRoundEnded()
     for _, survivor in pairs(lastRound.survivors) do
         survivorsF = survivorsF..pingFromName(survivor.player.Name).." - "..survivor.charname.."\n"
     end
-    local historyF = "ABCDEFG"
-
+    local historyF = "abcd\n\n"
+    for _, action in pairs(lastRound.actions) do
+        local formatted = action.desc.formattable
+        local targetsformatted = ""
+        local i = 1
+        for _, target in pairs(action.targets) do
+            targetsformatted = targetsformatted..pingFromName(target)
+            if i ~= #action.targets then
+                targetsformatted = targetsformatted..", "
+            end
+            i += 1
+        end
+        formatted = formatted:gsub("%A", pingFromName(action.actor.Name), 1)
+        formatted = formatted:gsub("%T", targetsformatted, 1)
+        historyF = historyF..formatted.." (+"..tostring(action.desc.pointReward)..")\n"
+    end
     local embedCol = math.random(0, 16777215)
     local payload = {
         embeds={

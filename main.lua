@@ -10,7 +10,7 @@ pings = {
     ["anderkva"] = "<@1045795103001825400>",
     ["unttaka"] = "<@577128685342031892>",
     ["lengotova"] = "<@796288372388790292>",
-    ["Lynzqqx"] = "<@584019099965980674>",
+    --["Lynzqqx"] = "<@584019099965980674>",
     ["jarik122012"] = "<@946397884209823745>",
     ["Xx_KaKoSuKxX"] = "<@903598078387445770>",
     ["th_vladaimir"] = "<VLADAIMIR PING>", -- TESTING ONLY
@@ -22,10 +22,10 @@ participants = {
     "anderkva", -- 2
     "unttaka", -- 3
     "lengotova", -- 4
-    "Lynzqqx", -- 5
-    "jarik122012", -- 6
-    "Xx_KaKoSuKxX", -- 7
-    "th_vladaimir" -- 8 TESTING ONLY
+    --"Lynzqqx", -- LOX
+    "jarik122012", -- 5
+    "Xx_KaKoSuKxX", -- 6
+    "th_vladaimir" -- 7 TESTING ONLY
 }
 
 function pingFromName(name:string):string

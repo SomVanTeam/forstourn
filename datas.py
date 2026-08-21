@@ -40,7 +40,7 @@ PARTICIPANTS = [
     Participant("anderkva", "anderkva", 1045795103001825400),
     Participant("unt", "unttaka", 577128685342031892),
     Participant("lengot", "lengotova", 796288372388790292),
-    Participant("avelin", "Lynzqqx", 584019099965980674),
+    #Participant("avelin", "Lynzqqx", 584019099965980674),
     Participant("yung", "jarik122012", 946397884209823745),
     Participant("spl", "Xx_KaKoSuKxX", 903598078387445770),
 ]

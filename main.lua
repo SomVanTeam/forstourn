@@ -300,22 +300,22 @@ function roundStart():boolean
         stringBuf("GiveStatus"),
         stringBuf("All"),
         stringBuf("Helpless"),
-        numberBuf(10),
-        numberBuf(5)
+        numberBuf(676767),
+        numberBuf(8)
     })
     sendAdminCommand({
         stringBuf("GiveStatus"),
         stringBuf("All"),
         stringBuf("Slowness"),
         numberBuf(10),
-        numberBuf(5)
+        numberBuf(8)
     })
     sendAdminCommand({
         stringBuf("GiveStatus"),
         stringBuf("All"),
         stringBuf("Resistance"),
-        numberBuf(10),
-        numberBuf(5)
+        numberBuf(676767),
+        numberBuf(8)
     })
     for _, s in pairs(getAliveSurvivors()) do
         table.insert(lastRound.survivors, {
@@ -391,7 +391,7 @@ function onRoundEnded()
         embeds={
             {
                 title="Раунд Окончен",
-                description="Киллеры:\n"+killersF+"\nСюрвы:\n"+survivorsF+"\nПродлился "..tostring(roundLastedFor).." секунд",
+                description="Киллеры:\n"..killersF.."\nСюрвы:\n"..survivorsF.."\nПродлился "..tostring(roundLastedFor).." секунд",
                 color=embedCol,
                 fields={
                     {

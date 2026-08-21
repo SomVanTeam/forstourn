@@ -40,6 +40,9 @@ function sendAdminCommand(buftable:{buffer}):nil
 end
 
 function stringBuf(str:string):buffer
+    if typeof(str) == "buffer" then
+        print(buffer.readstring(str, 0, buffer.len(str)))
+    end
     local buf = buffer.create(string.len(str)+5) --buffer.fromstring("\x03\x00\x00\x00\x00"..str)
     -- first byte is 03 meaning this is a string
     buffer.writeu8(buf, 0, 3)
@@ -289,27 +292,29 @@ function roundStart():boolean
     end
     roundActive = true
     lastRound = {}
+    print("A")
     sendAdminCommand({
         stringBuf("GiveStatus"),
-        stringBuf(targetAll),
+        stringBuf("All"),
         stringBuf("Helpless"),
         numberBuf(10),
         numberBuf(5)
     })
     sendAdminCommand({
         stringBuf("GiveStatus"),
-        stringBuf(targetAll),
+        stringBuf("All"),
         stringBuf("Slowness"),
         numberBuf(10),
         numberBuf(5)
     })
     sendAdminCommand({
         stringBuf("GiveStatus"),
-        stringBuf(targetAll),
+        stringBuf("All"),
         stringBuf("Resistance"),
         numberBuf(10),
         numberBuf(5)
     })
+    print("B")
     for _, s in pairs(getAliveSurvivors()) do
         s:FindFirstChildOfClass("Humanoid").Died:Once(function()
             addAction({

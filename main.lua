@@ -452,3 +452,9 @@ commandsTab:CreateButton({
         roundAbandon()
     end
 })
+
+networker.OnClientEvent:Connect(function(message, buftable)
+    if message == "RoundEnded" then
+        onRoundEnded()
+    end
+end)

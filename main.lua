@@ -229,7 +229,7 @@ function tryGivePenalty(plr:Player):nil
     end
 end
 
-local desiredMatchCombo = "[0, 1, 2, 5, 7]"
+local desiredMatchCombo = "[0, 8, 2, 5, 7]"
 local desiredMap = ""
 
 local roundBeganTime = 0
